@@ -88,6 +88,7 @@ class ClockUi(BaseUi):
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.homework_list:List[str] = fetch_homework(client)
+        self.needed_items_list = fetch_needed_items(client=client)
         self.last_updated_minute_items = datetime.now(JST)
         
     def update_item_list(self):
@@ -96,6 +97,7 @@ class ClockUi(BaseUi):
         
         if elapsed_time >= timedelta(minutes=1):
             self.homework_list = fetch_homework(client=client)
+            self.needed_items_list = fetch_needed_items(client=client)
             self.last_updated_minute_items = now_jst
         
     def update(self):
@@ -105,6 +107,7 @@ class ClockUi(BaseUi):
         now_jst = datetime.now(JST)
         self.draw_center(now_jst.strftime("%m/%d(%a) %H:%M:%S"))
         self.draw_hud("\n".join(self.homework_list), Positions.topleft, font_size=75)
+        self.draw_hud("\n".join(self.needed_items_list), Positions.topright, font_size=75)
         
 
 class ItemListUi(BaseUi):
