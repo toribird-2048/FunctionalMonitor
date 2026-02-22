@@ -1,0 +1,26 @@
+[project]
+name = "functionalmonitor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "notion-client>=3.0.0",
+    "pygame-ce>=2.5.6",
+    "python-dotenv>=1.2.1",
+]
+
+[tool.uv.workspace]
+members = ["pygame"]
+
+[tool.mypy]
+python_executable = ".venv/Scripts/python.exe"
+
+ignore_missing_imports = true
+
+check_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+]

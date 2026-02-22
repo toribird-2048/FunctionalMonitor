@@ -1,0 +1,47 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+### uv / Virtual Environment ###
+# uvが作成する仮想環境ディレクトリ
+.venv/
+# uvのキャッシュ（通常はプロジェクト外ですが念のため）
+.uv/
+
+### mypy ###
+# mypyのキャッシュ（これを無視しないとGitが重くなります）
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+### IDE / Editor ###
+.vscode/
+.idea/
+*.swp
+*.swo
+
+### OS ###
+.DS_Store
+Thumbs.db
