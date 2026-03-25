@@ -17,7 +17,15 @@ def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}) -> Ge
     start_cursor = None
     has_more = True
     while has_more:
-        res:Dict[str, Any] = client.data_sources.query(data_source_id=NOTION_DATA_SOURCE_ID, start_cursor=start_cursor, filter=query_filter) #type: ignore
+        try:
+            res:Dict[str, Any] = client.data_sources.query(
+                data_source_id=NOTION_DATA_SOURCE_ID,
+                start_cursor=start_cursor,
+                filter=query_filter
+            ) #type: ignore
+        except Exception as e:
+            print(f"[Notion API Error] {e}")
+            return
         has_more = res["has_more"]
         start_cursor = res["next_cursor"]
         for result in res["results"]:
@@ -79,13 +87,19 @@ homework_condition = {
 def fetch_needed_items(client: Client) -> List[str]:
     needed_items: List[str] = []
     for result in fetch_datasource_page(client=client, query_filter=needed_items_condition):
-        name = result["properties"]["課題"]["title"][0]["text"]["content"]
-        needed_items.append(name)
+        try:
+            name = result["properties"]["課題"]["title"][0]["text"]["content"]
+            needed_items.append(name)
+        except (KeyError, IndexError):
+            pass
     return needed_items
 
 def fetch_homework(client: Client) -> List[str]:
     homework: List[str] = []
     for result in fetch_datasource_page(client=client, query_filter=homework_condition):
-        name = result["properties"]["課題"]["title"][0]["text"]["content"]
-        homework.append(name)
+        try:
+            name = result["properties"]["課題"]["title"][0]["text"]["content"]
+            homework.append(name)
+        except (KeyError, IndexError):
+            pass
     return homework
