@@ -104,7 +104,7 @@ class ClockUi(BaseUi):
         if new_homework:
             self.homework_list = new_homework
         if new_items:
-        self.needed_items_list = new_items
+            self.needed_items_list = new_items
         
         self.last_updated_minute_items = now_jst
         
