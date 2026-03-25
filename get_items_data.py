@@ -13,7 +13,7 @@ JST = timezone(timedelta(hours=9))
 now_jst = datetime.now(JST)
 tomorrow = (now_jst + timedelta(hours=12)).date().isoformat()
 
-def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]=}, sorts: List[Dict[str, Any]]=[]) -> Generator[Dict[str, Any], None, None]:
+def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}, sorts: List[Dict[str, Any]]=[]) -> Generator[Dict[str, Any], None, None]:
     start_cursor = None
     has_more = True
     while has_more:
