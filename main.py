@@ -95,10 +95,18 @@ class ClockUi(BaseUi):
         now_jst = datetime.now(JST)
         elapsed_time = now_jst - self.last_updated_minute_items
         
-        if elapsed_time >= timedelta(minutes=1):
-            self.homework_list = fetch_homework(client=client)
-            self.needed_items_list = fetch_needed_items(client=client)
-            self.last_updated_minute_items = now_jst
+        if elapsed_time < timedelta(minutes=1):
+            return
+
+        new_homework = fetch_homework(client=client)
+        new_items = fetch_needed_items(client=client)
+
+        if new_homework:
+            self.homework_list = new_homework
+        if new_items:
+        self.needed_items_list = new_items
+        
+        self.last_updated_minute_items = now_jst
         
     def update(self):
         self.update_item_list()
@@ -129,10 +137,16 @@ class ItemListUi(BaseUi):
         now_jst = datetime.now(JST)
         elapsed_time = now_jst - self.last_updated_minute_items
         
-        if elapsed_time >= timedelta(minutes=1):
-            self.items_list = fetch_needed_items(client=client)
-            self.last_updated_minute_items = now_jst
+        if elapsed_time < timedelta(minutes=1):
+            return
+
+        new_items = fetch_needed_items(client=client)
+
+        if new_items:
+            self.items_list = new_items
         
+        self.last_updated_minute_items = now_jst
+    
     def update(self):
         self.update_item_list()
             
