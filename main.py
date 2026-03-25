@@ -121,7 +121,7 @@ class ClockUi(BaseUi):
     
     def draw(self):
         now_jst = datetime.now(JST)
-        self.draw_center(now_jst.strftime("%H:%M:%S\n%m/%d（%a）"), font_path=NOTO_SANS_JP)
+        self.draw_center(now_jst.strftime("%H:%M:%S\n%m/%d %a "))
         self.draw_hud("\n".join(self.homework_list[:5]), Positions.topleft, font_size=75)
         self.draw_hud("\n".join(self.needed_items_list[:5]), Positions.topright, font_size=75)
         
