@@ -13,7 +13,7 @@ JST = timezone(timedelta(hours=9))
 now_jst = datetime.now(JST)
 tomorrow = (now_jst + timedelta(hours=12)).date().isoformat()
 
-def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}) -> Generator[Dict[str, Any], None, None]:
+def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]=}, sorts: List[Dict[str, Any]]=[]) -> Generator[Dict[str, Any], None, None]:
     start_cursor = None
     has_more = True
     while has_more:
@@ -21,7 +21,8 @@ def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}) -> Ge
             res:Dict[str, Any] = client.data_sources.query(
                 data_source_id=NOTION_DATA_SOURCE_ID,
                 start_cursor=start_cursor,
-                filter=query_filter
+                filter=query_filter,
+                sorts=sorts
             ) #type: ignore
         except Exception as e:
             print(f"[Notion API Error] {e}")
@@ -34,7 +35,7 @@ def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}) -> Ge
 tomorrow_deadline_condition: Dict[str, Any] = {
     "property" : "期限",
     "date" : {
-        "equals": tomorrow
+        "on_or_after": tomorrow
     }
 }
 
@@ -84,9 +85,16 @@ homework_condition = {
     ]
 }
 
+deadline_sort: List[Dict[str, Any]] = [
+    {
+        "property": "期限",
+        "direction": "ascending"
+    }
+]
+
 def fetch_needed_items(client: Client) -> List[str]:
     needed_items: List[str] = []
-    for result in fetch_datasource_page(client=client, query_filter=needed_items_condition):
+    for result in fetch_datasource_page(client=client, query_filter=needed_items_condition, sorts=deadline_sort):
         try:
             name = result["properties"]["課題"]["title"][0]["text"]["content"]
             needed_items.append(name)
@@ -96,7 +104,7 @@ def fetch_needed_items(client: Client) -> List[str]:
 
 def fetch_homework(client: Client) -> List[str]:
     homework: List[str] = []
-    for result in fetch_datasource_page(client=client, query_filter=homework_condition):
+    for result in fetch_datasource_page(client=client, query_filter=homework_condition, sorts=deadline_sort):
         try:
             name = result["properties"]["課題"]["title"][0]["text"]["content"]
             homework.append(name)
