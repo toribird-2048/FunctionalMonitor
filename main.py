@@ -38,10 +38,18 @@ class BaseUi:
     
     def draw_center(self, text:str, font_size:int = 250, color:tuple[int, int, int]=(255,255,255)) -> None:
         font = self.get_font(font_size, None)
-        text_surface: pygame.Surface = font.render(text, True, color)
-        text_rect: pygame.Rect = text_surface.get_rect()
-        text_rect.center = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)
-        self.screen.blit(text_surface, text_rect)
+        lines = text.split("\n")
+        line_height = font_size
+        total_height = line_height * len(lines)
+
+        for k, line in enumerate(lines):
+            text_surface: pygame.Surface = font.render(line, True, color)
+            text_rect: pygame.Rect = text_surface.get_rect()
+            text_rect.center = (
+                SCREEN_SIZE[0] // 2,
+                SCREEN_SIZE[1] // 2 - total_height // 2 + line_height * k + line_height // 2
+            )
+            self.screen.blit(text_surface, text_rect)
         
     def draw_hud(self, text:str, position:Positions, font_size:int=50, color:tuple[int, int, int]=(255,255,255)) -> None:
         font = self.get_font(font_size, NOTO_SANS_JP)
@@ -113,7 +121,7 @@ class ClockUi(BaseUi):
     
     def draw(self):
         now_jst = datetime.now(JST)
-        self.draw_center(now_jst.strftime("%m/%d(%a) %H:%M:%S"))
+        self.draw_center(now_jst.strftime("%m/%d(%a)\n%H:%M:%S"))
         self.draw_hud("\n".join(self.homework_list[:5]), Positions.topleft, font_size=75)
         self.draw_hud("\n".join(self.needed_items_list[:5]), Positions.topright, font_size=75)
         
