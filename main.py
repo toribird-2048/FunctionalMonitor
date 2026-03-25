@@ -16,6 +16,7 @@ NOTION_DATA_SOURCE_ID = os.environ["NOTION_DATA_SOURCE_ID"]
 SCREEN_SIZE = (1920, 1280)
 JST = timezone(timedelta(hours=9))
 NOTO_SANS_JP = "./fonts/NotoSansJP-VariableFont_wght.ttf"
+NOTO_SANS_JP_BOLD = "./fonts/NotoSansJP-Bold.ttf"
 
 client = Client(auth=NOTION_API_KEY)
 
@@ -51,8 +52,8 @@ class BaseUi:
             )
             self.screen.blit(text_surface, text_rect)
         
-    def draw_hud(self, text:str, position:Positions, font_size:int=50, color:tuple[int, int, int]=(255,255,255)) -> None:
-        font = self.get_font(font_size, NOTO_SANS_JP)
+    def draw_hud(self, text:str, position:Positions, font_size:int=50, color:tuple[int, int, int]=(255,255,255), font_path:str | None = NOTO_SANS_JP) -> None:
+        font = self.get_font(font_size, font_path)
         lines = text.split("\n")
         line_height = font_size
         
@@ -122,8 +123,8 @@ class ClockUi(BaseUi):
     def draw(self):
         now_jst = datetime.now(JST)
         self.draw_center(now_jst.strftime("%H:%M:%S\n%m/%d %a "))
-        self.draw_hud("\n".join(self.homework_list[:5]), Positions.topleft, font_size=75)
-        self.draw_hud("\n".join(self.needed_items_list[:5]), Positions.topright, font_size=75)
+        self.draw_hud("\n".join(self.homework_list[:5]), Positions.topleft, font_size=75, font_path=NOTO_SANS_JP_BOLD)
+        self.draw_hud("\n".join(self.needed_items_list[:5]), Positions.topright, font_size=75, font_path=NOTO_SANS_JP_BOLD)
         
 
 class ItemListUi(BaseUi):
