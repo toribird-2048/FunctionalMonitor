@@ -57,7 +57,7 @@ class BaseUi:
         line_height = font_size
         
         for k, line in enumerate(lines):
-            text_surface: pygame.Surface = font.render(text, True, color)
+            text_surface: pygame.Surface = font.render(line, True, color)
             text_rect: pygame.Rect = text_surface.get_rect()
             
             if position == Positions.topleft:
