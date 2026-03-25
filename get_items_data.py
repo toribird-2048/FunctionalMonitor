@@ -27,7 +27,7 @@ def fetch_datasource_page(client: Client, query_filter: Dict[str, Any]={}) -> Ge
             print(f"[Notion API Error] {e}")
             return
         has_more = res["has_more"]
-        start_cursor = res["next_cursor"]
+        start_cursor = res.get("next_cursor")
         for result in res["results"]:
             yield result
             
