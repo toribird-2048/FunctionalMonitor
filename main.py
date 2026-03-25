@@ -36,8 +36,8 @@ class BaseUi:
             self.fonts[font_key] = pygame.Font(font_path, font_size)
         return self.fonts[font_key]
     
-    def draw_center(self, text:str, font_size:int = 250, color:tuple[int, int, int]=(255,255,255)) -> None:
-        font = self.get_font(font_size, None)
+    def draw_center(self, text:str, font_size:int = 250, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
+        font = self.get_font(font_size, font_path)
         lines = text.split("\n")
         line_height = font_size
         total_height = line_height * len(lines)
@@ -121,7 +121,7 @@ class ClockUi(BaseUi):
     
     def draw(self):
         now_jst = datetime.now(JST)
-        self.draw_center(now_jst.strftime("%m/%d(%a)\n%H:%M:%S"))
+        self.draw_center(now_jst.strftime("%m/%d(%a)\n%H:%M:%S"), font_path=NOTO_SANS_JP)
         self.draw_hud("\n".join(self.homework_list[:5]), Positions.topleft, font_size=75)
         self.draw_hud("\n".join(self.needed_items_list[:5]), Positions.topright, font_size=75)
         
