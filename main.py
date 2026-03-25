@@ -36,7 +36,7 @@ class BaseUi:
             self.fonts[font_key] = pygame.Font(font_path, font_size)
         return self.fonts[font_key]
     
-    def draw_center(self, text:str, font_size:int = 250, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
+    def draw_center(self, text:str, font_size:int = 300, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
         font = self.get_font(font_size, font_path)
         lines = text.split("\n")
         line_height = font_size
