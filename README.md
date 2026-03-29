@@ -1,85 +1,60 @@
 # FunctionalMonitor
 
-A Python-based monitoring solution designed to track and analyze functional performance metrics.
+## 概要
 
-## Overview
+FunctionalMonitorは、Notionを利用して「課題」や「持ち物」など情報を自動取得し、Pygameを使った全画面インフォメーションボードとして表示するアプリケーションです。学校や自宅のディスプレイ・サイネージ端末向け情報表示モニターに最適です。
 
-FunctionalMonitor is a comprehensive monitoring tool that helps you track system functionality, performance, and health metrics in real-time. Built with Python, it provides a flexible and extensible framework for monitoring applications and services.
+## 主な機能
 
-## Features
+- **Notion API連携**  
+  指定したNotionデータベースから、「明日までの持ち物」や「課題」を自動取得します。
+- **多彩な情報表示UI**  
+  時計・課題・TODO・翌日の持ち物リストなど、複数のUI表示に切替対応。キーボードで表示を切り替え可能。
+- **日本語対応・カスタムフォント**  
+  日本語フォント（NotoSansJP）が同梱され、日本語���報もきれいに表示。
+- **フルスクリーン表示**  
+  デジタルサイネージ用途に十分な1920x1280での全画面描画。
 
-- **Real-time Monitoring**: Track functional metrics as they happen
-- **Performance Analysis**: Analyze performance data and identify bottlenecks
-- **Flexible Configuration**: Easily configure monitoring parameters for your use case
-- **Extensible Architecture**: Add custom monitors and metrics tailored to your needs
-- **Data Logging**: Comprehensive logging for audit and analysis purposes
+## 必要な環境
 
-## Requirements
+- Python 3.10以降推奨
+- 必須ライブラリ: `pygame`, `notion_client`, `python-dotenv`
+- Notion API用インテグレーショントークン、及びデータベースID（いずれも環境変数設定が必要）
 
-- Python 3.7+
-- pip (Python package manager)
+## インストール
 
-## Installation
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/toribird-2048/FunctionalMonitor.git
 cd FunctionalMonitor
+pip install -r requirements.txt  # または pyproject.toml を参照
 ```
 
-2. Install dependencies:
+### .env ファイル例
+
+```
+NOTION_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+NOTION_DATA_SOURCE_ID=xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## 使い方
+
 ```bash
-pip install -r requirements.txt
+python main.py
 ```
+起動すると全画面で時計や課題・持ち物リストなどが表示されます。  
+（キー操作で画面表示の切り替えが可能です）
 
-## Quick Start
+- ESCまたはCtrl+Eで終了
 
-```python
-from FunctionalMonitor import Monitor
+## カスタマイズ・注意
 
-# Initialize the monitor
-monitor = Monitor()
+- Notionデータベースの構造は、「期日」「課題」「種別」「完了」「終了」など所定のプロパティ名を使う前提です。  
+- プロパティ名等を変更する場合は `get_items_data.py` などを修正してください。
 
-# Start monitoring
-monitor.start()
+## ライセンス
 
-# Your application code here
-# ...
+MITライセンス
 
-# Stop monitoring
-monitor.stop()
-```
+---
 
-## Configuration
-
-Configure the monitor by creating a `config.yaml` file or passing configuration parameters directly:
-
-```python
-config = {
-    'interval': 5,  # Check interval in seconds
-    'log_level': 'INFO',
-    'metrics': ['cpu', 'memory', 'disk']
-}
-
-monitor = Monitor(config=config)
-```
-
-## Usage Examples
-
-See the `examples/` directory for detailed usage examples and sample scripts.
-
-## Documentation
-
-For comprehensive documentation, see the [docs/](docs/) directory.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
+**詳細なNotionデータベース設定や環境変数の値など、導入状況に合わせてREADMEを適宜**.
