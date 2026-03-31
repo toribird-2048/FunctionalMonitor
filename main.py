@@ -214,7 +214,7 @@ class UiController:
         self.uis:List[BaseUi] = [ClockUi(self.screen), ItemListUi(self.screen), AlertUi(self.screen)]
         
     def check_alerts(self) -> None:
-        if not os.path.exists(self.status_file):
+        if not os.path.exists(AlertUi.status_file):
             return
         try:
             with open(AlertUi.status_file, "r") as f:
