@@ -10,7 +10,7 @@ STATUS_FILE = "alerts.json"
 
 class AlertUpdate(BaseModel):
     type: AlertUi.AlertType
-    battery: int
+    active: bool
 
 @app.post("/alert")
 async def update_alert(data: AlertUpdate):
@@ -21,7 +21,7 @@ async def update_alert(data: AlertUpdate):
                 current_alerts = json.load(f)
         except:
             pass
-    current_alerts[data.type.name] = data.battery < 50
+    current_alerts[data.type.name] = data.active
     
     try:
         with open(STATUS_FILE, "w") as f:
