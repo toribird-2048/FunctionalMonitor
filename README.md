@@ -26,7 +26,7 @@ FunctionalMonitorは、Notionを利用して「課題」や「持ち物」など
 ```bash
 git clone https://github.com/toribird-2048/FunctionalMonitor.git
 cd FunctionalMonitor
-pip install -r requirements.txt  # または pyproject.toml を参照
+uv sync
 ```
 
 ### .env ファイル例
@@ -39,7 +39,7 @@ NOTION_DATA_SOURCE_ID=xxxxxxxxxxxxxxxxxxxxxxxx
 ## 使い方
 
 ```bash
-python main.py
+uv run main.py
 ```
 起動すると全画面で時計や課題・持ち物リストなどが表示されます。  
 （キー操作で画面表示の切り替えが可能です）
@@ -54,7 +54,3 @@ python main.py
 ## ライセンス
 
 MITライセンス
-
----
-
-**詳細なNotionデータベース設定や環境変数の値など、導入状況に合わせてREADMEを適宜**.
