@@ -7,6 +7,7 @@ from datetime import timezone, timedelta, datetime
 from dotenv import load_dotenv
 from enum import Enum, auto
 from get_items_data import fetch_needed_items, fetch_homework
+import json
 
 load_dotenv()
 
@@ -164,6 +165,42 @@ class ItemListUi(BaseUi):
         next_day = current_day + timedelta(days=1)
         self.draw_document(self.diary_needed_items[next_day.strftime("%a")] + self.items_list)
 
+class AlertUi(BaseUi):
+    class AlertType(Enum):
+        TAK_LOW_BATTERY = auto()
+        AQUOS_LOW_BATTERY = auto()
+    status_file = "alerts.json"
+    def __init__(self, screen:pygame.Surface):
+        super().__init__(screen)
+        self.default_close_key = pygame.K_n
+        self.custom_alert_message = {
+            self.AlertType.TAK_LOW_BATTERY: "学校用iPadを充電!",
+            self.AlertType.AQUOS_LOW_BATTERY: "スマホを充電！"
+            }
+
+    def get_active_alerts(self):
+        active_messages = []
+        if not os.path.exists(self.status_file):
+            return active_messages
+        try:
+            with open(self.status_file, "r") as f:
+                data = json.load(f)
+            
+            for alert_type in self.AlertType:
+                val = data.get(alert_type.name, False)
+                if val == True:
+                    active_messages.append(self.custom_alert_message[alert_type])
+        except:
+            pass
+        return active_messages
+
+    def draw(self):
+        messages = self.get_active_alerts()
+        if not messages:
+            return
+        
+        self.draw_document(messages)
+    
 
 class UiController:
     def __init__(self):
@@ -174,7 +211,26 @@ class UiController:
         self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
         pygame.display.set_caption("Functional_Monitor")
         pygame.mouse.set_visible(False)
-        self.uis:List[BaseUi] = [ClockUi(self.screen), ItemListUi(self.screen)]
+        self.uis:List[BaseUi] = [ClockUi(self.screen), ItemListUi(self.screen), AlertUi(self.screen)]
+        
+    def check_alerts(self) -> None:
+        if not os.path.exists(self.status_file):
+            return
+        try:
+            with open(AlertUi.status_file, "r") as f:
+                data = json.load(f)
+            
+            for alert_type in AlertUi.AlertType:
+                val = data.get(alert_type.name, False)
+                if val == True:
+                    self.current_ui_index = 2
+                    return
+        except:
+            pass
+        return
+
+    def checks(self):
+        self.check_alerts()
         
     def key_event(self) -> None:
         for event in pygame.event.get():
@@ -204,9 +260,13 @@ class UiController:
         self.uis[self.current_ui_index].draw()
         pygame.display.flip()
         pygame.time.Clock().tick(60)
+
+    def process(self):
+        self.key_event()
+        self.checks()
+        self.update_and_draw()
         
 if __name__ == "__main__":
     controller = UiController()
     while True:
-        controller.key_event()
-        controller.update_and_draw()
+        controller.process()
