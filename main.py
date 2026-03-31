@@ -199,7 +199,7 @@ class AlertUi(BaseUi):
         if not messages:
             return
         
-        self.draw_document(messages)
+        self.draw_document(messages, font_size=250, color=(255,20,20))
     
 
 class UiController:
