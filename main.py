@@ -215,6 +215,7 @@ class UiController:
         
     def check_alerts(self) -> None:
         if not os.path.exists(AlertUi.status_file):
+            self.current_ui_index = 0
             return
         try:
             with open(AlertUi.status_file, "r") as f:
@@ -227,6 +228,7 @@ class UiController:
                     return
         except:
             pass
+        self.current_ui_index = 0
         return
 
     def checks(self):
