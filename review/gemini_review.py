@@ -11,6 +11,8 @@ head_branch = sys.argv[2]
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
+context_path = "REVIEW_CONTEXT.md"
+
 def get_git_result(command):
     try:
         return subprocess.check_output(command, shell=True).decode("utf-8").strip()
@@ -20,6 +22,11 @@ def get_git_result(command):
 files = get_git_result(f"git diff --name-only origin/{base_branch}...HEAD").split("\n")
 
 review_results = []
+
+context_content = ""
+if os.path.exists(context_path):
+    with open(context_path, "r", encoding="utf-8") as f:
+        context_content = f.read()
 
 for file_path in files:
     if not file_path or not os.path.exists(file_path) or os.path.isdir(file_path):
@@ -37,9 +44,12 @@ for file_path in files:
         continue
 
     prompt = f"""
-    あなたはシニアエンジニアです。以下のファイルのコードレビューを行ってください。
+    あなたはシニアエンジニアです。プロジェクトの前提条件を理解した上で、以下のファイルのコードレビューを行ってください。
 
     ファイル名： {file_path}
+
+    ### プロジェクトの前提条件
+    {context_content}
 
     ### 修正後のファイル全文
     {full_content}
