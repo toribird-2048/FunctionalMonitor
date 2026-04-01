@@ -174,12 +174,12 @@ class AlertUi(BaseUi):
         super().__init__(screen)
         self.default_close_key = pygame.K_n
         self.custom_alert_message = {
-            self.AlertType.TAK_LOW_BATTERY: "学校用iPadを充電!",
-            self.AlertType.AQUOS_LOW_BATTERY: "スマホを充電！"
+            self.AlertType.TAK_LOW_BATTERY: "Charge Tak iPad!",
+            self.AlertType.AQUOS_LOW_BATTERY: "Charge my AQUOS!"
             }
 
     def get_active_alerts(self):
-        active_messages = []
+        active_messages = ["Alerts:"]
         if not os.path.exists(self.status_file):
             return active_messages
         try:
@@ -199,7 +199,7 @@ class AlertUi(BaseUi):
         if not messages:
             return
         
-        self.draw_document(messages, font_size=250, color=(255,20,20))
+        self.draw_center(messages, font_size=200, color=(255,0,0))
     
 
 class UiController:
