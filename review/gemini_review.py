@@ -11,6 +11,8 @@ head_branch = sys.argv[2]
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
+MAX_RETRIES = 3
+
 context_path = "REVIEW_CONTEXT.md"
 
 def get_git_result(command):
@@ -84,10 +86,18 @@ for file_path in files:
     - 指示は簡潔かつ具体的にお願いします。
     """
 
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=prompt
-    )
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
+            )
+            break
+        except Exception as e:
+            if "503" in str(e) and attempt < MAX_RETRIES - 1:
+                print(f"Server busy, rtrying in 5s ... (Attempt{attempt+1})")
+                continue
+            raise e
 
     time.sleep(1)
 
