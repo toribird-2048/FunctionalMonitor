@@ -20,7 +20,7 @@ IGNORE_EXTENSIONS = {
 
 MAX_FILE_SIZE = 500 * 1024
 
-context_path = "REVIEW_CONTEXT.md"
+context_path = "review/REVIEW_CONTEXT.md"
 
 def get_git_result(command):
     try:
@@ -48,7 +48,7 @@ for file_path in files:
 
     file_size = os.path.getsize(file_path)
     if file_size > MAX_FILE_SIZE:
-        print(f"Skipping large file (>500MB): {file_path} ({file_size//1024}KB)")
+        print(f"Skipping large file (>500KB): {file_path} ({file_size//1024}KB)")
         continue
 
     try:
@@ -117,7 +117,7 @@ for file_path in files:
             break
         except Exception as e:
             if "503" in str(e) and attempt < MAX_RETRIES - 1:
-                print(f"Server busy, rtrying in 5s ... (Attempt{attempt+1})")
+                print(f"Server busy, retrying in 5s ... (Attempt{attempt+1})")
                 print(f"Error details: {e}")
                 continue
             raise e
