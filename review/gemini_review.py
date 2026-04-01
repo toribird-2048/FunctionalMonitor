@@ -109,7 +109,7 @@ for file_path in files:
         start_time = time.time()
         try:
             response = client.models.generate_content(
-                model="gemini-3-flash-preview",
+                model="gemini-3.1-flash-lite-preview",
                 contents=prompt
             )
             elapsed = time.time() - start_time
