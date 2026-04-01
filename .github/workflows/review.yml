@@ -2,6 +2,12 @@ name: Gemini Code Review
 on:
   pull_request:
     types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      base_branch:
+        description: 'Base branch'
+        required: true
+        default: 'main'
 
 jobs:
   review:

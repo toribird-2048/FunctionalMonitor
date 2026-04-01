@@ -13,6 +13,13 @@ client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 MAX_RETRIES = 3
 
+IGNORE_EXTENSIONS = {
+    '.ttf', '.woff', '.woff2', '.png', '.jpg', '.jpeg', '.gif', '.svg', 
+    '.ico', '.pdf', '.zip', '.gz', '.tar', '.mp4', '.mp3', '.db', '.sqlite'
+}
+
+MAX_FILE_SIZE = 500 * 1024
+
 context_path = "REVIEW_CONTEXT.md"
 
 def get_git_result(command):
@@ -34,16 +41,28 @@ for file_path in files:
     if not file_path or not os.path.exists(file_path) or os.path.isdir(file_path):
         continue
 
+    _, ext = os.path.splitext(file_path)
+    if ext.lower() in IGNORE_EXTENSIONS:
+        print(f"Skipping binary/unsupported file: {file_path}")
+        continue
+
+    file_size = os.path.getsize(file_path)
+    if file_size > MAX_FILE_SIZE:
+        print(f"Skipping large file (>500MB): {file_path} ({file_size//1024}KB)")
+        continue
+
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             full_content = f.read()
     except UnicodeDecodeError:
-        print(f"Skipping binary file: {file_path}")
+        print(f"Skipping non-UTF8 file: {file_path}")
         continue
     
     diff_content = get_git_result(f"git diff origin/{base_branch}...HEAD -- {file_path}")
     if not diff_content:
         continue
+
+    print(f"[Reviewing] {file_path} ({file_size // 1024}KB) ... ", end="", flush=True)
 
     prompt = f"""
     あなたはシニアエンジニアです。プロジェクトの前提条件を理解した上で、以下のファイルのコードレビューを行ってください。
@@ -87,15 +106,19 @@ for file_path in files:
     """
 
     for attempt in range(MAX_RETRIES):
+        start_time = time.time()
         try:
             response = client.models.generate_content(
                 model="gemini-3-flash-preview",
                 contents=prompt
             )
+            elapsed = time.time() - start_time
+            print(f"Done! ({elapsed:.1f}s)")
             break
         except Exception as e:
             if "503" in str(e) and attempt < MAX_RETRIES - 1:
                 print(f"Server busy, rtrying in 5s ... (Attempt{attempt+1})")
+                print(f"Error details: {e}")
                 continue
             raise e
 
