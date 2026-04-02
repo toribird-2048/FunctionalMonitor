@@ -28,15 +28,15 @@ class Positions(Enum):
     bottomright = auto()
 
 class BaseUi:
+    _font_cache: Dict[tuple[str | None, int], pygame.Font] = {}
     def __init__(self, screen:pygame.Surface):
         self.screen: pygame.Surface = screen
-        self.fonts: Dict[tuple[str | None, int], pygame.Font] = {}
         
     def get_font(self, font_size:int, font_path:str|None=None) -> pygame.Font:
         font_key = (font_path, font_size)
-        if font_key not in self.fonts:
-            self.fonts[font_key] = pygame.Font(font_path, font_size)
-        return self.fonts[font_key]
+        if font_key not in BaseUi._font_cache:
+            BaseUi._font_cache[font_key] = pygame.Font(font_path, font_size)
+        return BaseUi._font_cache[font_key]
     
     def draw_center(self, text:str, font_size:int = 300, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
         font = self.get_font(font_size, font_path)
@@ -129,19 +129,16 @@ class ClockUi(BaseUi):
         
 
 class ItemListUi(BaseUi):
+    essentials_path = "daily_essentials.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.items_list = fetch_needed_items(client=client)
         self.last_updated_minute_items = datetime.now(JST)
-        self.diary_needed_items: Dict[str, List[str]] = {
-            "Sun": [],
-            "Mon": ["体操服", "入試必携英作文"],
-            "Tue": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Wed": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Thu": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート", "体操服", "入試必携英作文"],
-            "Fri": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Sat": []
-        }
+        try:
+            with open(self.essentials_path, "r") as f:
+                self.daily_essentials: Dict[str, List[str]] = json.load(f)
+        except:
+            self.daily_essentials: Dict[str, List[str]] = {}
         
     def update_item_list(self):
         now_jst = datetime.now(JST)
@@ -163,7 +160,7 @@ class ItemListUi(BaseUi):
     def draw(self):
         current_day = datetime.now(JST)
         next_day = current_day + timedelta(days=1)
-        self.draw_document(self.diary_needed_items[next_day.strftime("%a")] + self.items_list)
+        self.draw_document(self.daily_essentials.get(next_day.strftime("%a"), []) + self.items_list)
 
 class AlertUi(BaseUi):
     class AlertType(Enum):
@@ -174,32 +171,36 @@ class AlertUi(BaseUi):
         super().__init__(screen)
         self.default_close_key = pygame.K_n
         self.custom_alert_message = {
-            self.AlertType.TAK_LOW_BATTERY: "学校用iPadを充電!",
-            self.AlertType.AQUOS_LOW_BATTERY: "スマホを充電！"
+            self.AlertType.TAK_LOW_BATTERY: "Charge Tak iPad!",
+            self.AlertType.AQUOS_LOW_BATTERY: "Charge my AQUOS!"
             }
 
     def get_active_alerts(self):
-        active_messages = []
+        active_messages = ["Alerts:"]
         if not os.path.exists(self.status_file):
             return active_messages
         try:
             with open(self.status_file, "r") as f:
                 data = json.load(f)
+            if not isinstance(data, dict):
+                raise TypeError("Data type must be dict")
             
             for alert_type in self.AlertType:
                 val = data.get(alert_type.name, False)
-                if val == True:
+                if isinstance(val, bool) and val is True:
                     active_messages.append(self.custom_alert_message[alert_type])
-        except:
-            pass
+                elif not isinstance(val, bool) and val is not None:
+                    print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
+        except (json.JSONDecodeError, IOError, TypeError) as e:
+            print(f"Error reading {self.status_file}: {e}")
         return active_messages
 
     def draw(self):
         messages = self.get_active_alerts()
-        if not messages:
+        if len(messages) <= 1:
             return
         
-        self.draw_document(messages, font_size=250, color=(255,20,20))
+        self.draw_center("\n".join(messages), font_size=200, color=(255,0,0))
     
 
 class UiController:
@@ -221,14 +222,18 @@ class UiController:
         try:
             with open(AlertUi.status_file, "r") as f:
                 data = json.load(f)
+            if not isinstance(data, dict):
+                raise TypeError("Data type must be dict")
             
             for alert_type in AlertUi.AlertType:
                 val = data.get(alert_type.name, False)
-                if val == True:
+                if isinstance(val, bool) and val is True:
                     self.current_ui_index = 2
                     return
-        except:
-            pass
+                elif not isinstance(val, bool) and val is not None:
+                    print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
+        except (json.JSONDecodeError, IOError, TypeError) as e:
+            print(f"Error reading {AlertUi.status_file}: {e}")
         if self.current_ui_index == 2:
             self.current_ui_index = 0
         return
@@ -273,4 +278,10 @@ class UiController:
 if __name__ == "__main__":
     controller = UiController()
     while True:
-        controller.process()
+        try:
+            controller.process()
+        except KeyboardInterrupt:
+            sys.exit(0)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
