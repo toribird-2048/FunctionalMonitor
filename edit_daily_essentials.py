@@ -34,8 +34,11 @@ for day in days:
     selected_items[day] = res
 
 if questionary.confirm("Save this configuration?").ask():
-    with open(essential_items_path, "w", encoding="utf-8") as f:
-        json.dump(selected_items, f, ensure_ascii=False, indent=4)
+    try:
+        with open(essential_items_path, "w", encoding="utf-8") as f:
+            json.dump(selected_items, f, ensure_ascii=False, indent=4)
+    except:
+        print(f"Failed to edit {essential_items_path}")
     print(f"Successfully saved to {essential_items_path}")
 else:
     print("Discarded changes.")

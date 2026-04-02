@@ -222,6 +222,8 @@ class UiController:
         try:
             with open(AlertUi.status_file, "r") as f:
                 data = json.load(f)
+                if not isinstance(data, dict):
+                    raise TypeError("Data type must be dict")
             
             for alert_type in AlertUi.AlertType:
                 val = data.get(alert_type.name, False)
@@ -280,3 +282,4 @@ if __name__ == "__main__":
             sys.exit(0)
         except Exception as e:
             print(e)
+            sys.exit(1)
