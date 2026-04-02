@@ -12,6 +12,7 @@ dependencies = [
     "pygame-ce>=2.5.0",
     "pygithub>=2.9.0",
     "python-dotenv>=1.2.1",
+    "questionary>=2.1.1",
     "uvicorn>=0.42.0",
 ]
 
