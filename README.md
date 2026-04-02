@@ -43,6 +43,10 @@ NOTION_DATA_SOURCE_ID=xxxxxxxxxxxxxxxxxxxxxxxx
 ```bash
 uv run main.py
 ```
+```bash
+uv run -m alerts.alert_controller
+```
+どちらもmain.pyが存在するディレクトリから実行すること。
 起動すると全画面で時計や課題・持ち物リストなどが表示されます。  
 （キー操作で画面表示の切り替えが可能です）
 
