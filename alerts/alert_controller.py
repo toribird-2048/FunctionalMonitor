@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from main import AlertUi
+from ..main import AlertUi
 import json
 import os
 import uvicorn
