@@ -36,7 +36,7 @@ class BaseUi:
         font_key = (font_path, font_size)
         if font_key not in BaseUi._font_cache:
             BaseUi._font_cache[font_key] = pygame.Font(font_path, font_size)
-        return self.font_cache[font_key]
+        return BaseUi._font_cache[font_key]
     
     def draw_center(self, text:str, font_size:int = 300, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
         font = self.get_font(font_size, font_path)
@@ -160,7 +160,7 @@ class ItemListUi(BaseUi):
     def draw(self):
         current_day = datetime.now(JST)
         next_day = current_day + timedelta(days=1)
-        self.draw_document(self.daily_essentials[next_day.strftime("%a")] + self.items_list)
+        self.draw_document(self.daily_essentials.get(next_day.strftime("%a"), []) + self.items_list)
 
 class AlertUi(BaseUi):
     class AlertType(Enum):
@@ -182,7 +182,7 @@ class AlertUi(BaseUi):
         try:
             with open(self.status_file, "r") as f:
                 data = json.load(f)
-            if isinstance(data, dict):
+            if not isinstance(data, dict):
                 raise TypeError("Data type must be dict")
             
             for alert_type in self.AlertType:
@@ -192,7 +192,7 @@ class AlertUi(BaseUi):
                 elif not isinstance(val, bool) and val is not None:
                     print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
         except Exception as e:
-            print(str(e))
+            print(f"Error reading {self.status_file}: {e}")
         return active_messages
 
     def draw(self):
@@ -274,4 +274,9 @@ class UiController:
 if __name__ == "__main__":
     controller = UiController()
     while True:
-        controller.process()
+        try:
+            controller.process()
+        except KeyboardInterrupt:
+            sys.exit(0)
+        except Exception as e:
+            print(e)
