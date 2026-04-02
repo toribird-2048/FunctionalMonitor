@@ -45,3 +45,6 @@ dmypy.json
 ### OS ###
 .DS_Store
 Thumbs.db
+
+### infos ###
+alerts.json
