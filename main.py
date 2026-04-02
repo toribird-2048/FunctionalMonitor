@@ -129,19 +129,13 @@ class ClockUi(BaseUi):
         
 
 class ItemListUi(BaseUi):
+    essentials_path = "daily_essentials.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.items_list = fetch_needed_items(client=client)
         self.last_updated_minute_items = datetime.now(JST)
-        self.diary_needed_items: Dict[str, List[str]] = {
-            "Sun": [],
-            "Mon": ["体操服", "入試必携英作文"],
-            "Tue": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Wed": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Thu": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート", "体操服", "入試必携英作文"],
-            "Fri": ["サクシード数Ⅲ", "オリジスタン数Ⅲ", "数学Ⅱ授業用ノート", "数学Ⅱ宿題用ノート"],
-            "Sat": []
-        }
+        with open(self.essentials_path, "r") as f:
+            self.daily_essentials: Dict[str, List[str]] = json.load(f)
         
     def update_item_list(self):
         now_jst = datetime.now(JST)
@@ -163,7 +157,7 @@ class ItemListUi(BaseUi):
     def draw(self):
         current_day = datetime.now(JST)
         next_day = current_day + timedelta(days=1)
-        self.draw_document(self.diary_needed_items[next_day.strftime("%a")] + self.items_list)
+        self.draw_document(self.daily_essentials[next_day.strftime("%a")] + self.items_list)
 
 class AlertUi(BaseUi):
     class AlertType(Enum):
@@ -185,13 +179,15 @@ class AlertUi(BaseUi):
         try:
             with open(self.status_file, "r") as f:
                 data = json.load(f)
+            if type(data) != dict:
+                raise TypeError("Data type must be dict")
             
             for alert_type in self.AlertType:
                 val = data.get(alert_type.name, False)
                 if val == True:
                     active_messages.append(self.custom_alert_message[alert_type])
-        except:
-            pass
+        except Exception as e:
+            print(str(e))
         return active_messages
 
     def draw(self):
