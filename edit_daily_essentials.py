@@ -37,8 +37,9 @@ if questionary.confirm("Save this configuration?").ask():
     try:
         with open(essential_items_path, "w", encoding="utf-8") as f:
             json.dump(selected_items, f, ensure_ascii=False, indent=4)
-    except:
+        print(f"Successfully saved to {essential_items_path}")
+    except Exception as e:
         print(f"Failed to edit {essential_items_path}")
-    print(f"Successfully saved to {essential_items_path}")
+        print({e})
 else:
     print("Discarded changes.")
