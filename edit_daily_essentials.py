@@ -40,6 +40,6 @@ if questionary.confirm("Save this configuration?").ask():
         print(f"Successfully saved to {essential_items_path}")
     except Exception as e:
         print(f"Failed to edit {essential_items_path}")
-        print({e})
+        print(str(e))
 else:
     print("Discarded changes.")
