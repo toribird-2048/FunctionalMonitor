@@ -11,3 +11,9 @@
 - **Robustness:** 異常終了時のユーザーフィードバック実装（Issue化済み）。
     - 現状、メインループ内での例外発生時にフリーズかクラッシュかの判別が困難。
     - 対策案：`try-except` でメインループを囲い、致命的エラー発生時に `BaseUi` の仕組みを利用して画面上にエラーメッセージ（トレースバック等）を巨大フォントで描画して停止する仕組みを検討中。
+
+### [File_Relationships]
+- `daily_essentials.json`: **[GENERATED]** `edit_daily_essentials.py` によって管理。
+    - 手動編集は行わないため、重複記述によるヒューマンエラーの指摘は不要。
+- `alerts.json`: **[EXTERNAL]** 外部API（Shortcuts/MacroDroid）から更新。
+    - 構造の整合性は送信側で担保。
