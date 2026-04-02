@@ -28,15 +28,15 @@ class Positions(Enum):
     bottomright = auto()
 
 class BaseUi:
+    _font_cache: Dict[tuple[str | None, int], pygame.Font] = {}
     def __init__(self, screen:pygame.Surface):
         self.screen: pygame.Surface = screen
-        self.fonts: Dict[tuple[str | None, int], pygame.Font] = {}
         
     def get_font(self, font_size:int, font_path:str|None=None) -> pygame.Font:
         font_key = (font_path, font_size)
-        if font_key not in self.fonts:
-            self.fonts[font_key] = pygame.Font(font_path, font_size)
-        return self.fonts[font_key]
+        if font_key not in BaseUi._font_cache:
+            BaseUi._font_cache[font_key] = pygame.Font(font_path, font_size)
+        return self.font_cache[font_key]
     
     def draw_center(self, text:str, font_size:int = 300, color:tuple[int, int, int]=(255,255,255), font_path:str | None = None) -> None:
         font = self.get_font(font_size, font_path)
@@ -187,7 +187,7 @@ class AlertUi(BaseUi):
             
             for alert_type in self.AlertType:
                 val = data.get(alert_type.name, False)
-                if isinstance(val, bool) and val is True
+                if isinstance(val, bool) and val is True:
                     active_messages.append(self.custom_alert_message[alert_type])
                 elif not isinstance(val, bool) and val is not None:
                     print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
