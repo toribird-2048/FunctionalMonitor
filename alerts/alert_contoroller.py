@@ -6,7 +6,7 @@ import os
 import uvicorn
 
 app = FastAPI()
-STATUS_FILE = "alerts.json"
+STATUS_FILE = "alerts/alerts.json"
 
 class AlertUpdate(BaseModel):
     type: AlertUi.AlertType

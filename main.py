@@ -129,7 +129,7 @@ class ClockUi(BaseUi):
         
 
 class ItemListUi(BaseUi):
-    essentials_path = "daily_essentials.json"
+    essentials_path = "essentials/daily_essentials.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.items_list = fetch_needed_items(client=client)
@@ -166,7 +166,7 @@ class AlertUi(BaseUi):
     class AlertType(Enum):
         TAK_LOW_BATTERY = "TAK_LOW_BATTERY"
         AQUOS_LOW_BATTERY = "AQUOS_LOW_BATTERY"
-    status_file = "alerts.json"
+    status_file = "alerts/alerts.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.default_close_key = pygame.K_n
