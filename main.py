@@ -134,8 +134,11 @@ class ItemListUi(BaseUi):
         super().__init__(screen)
         self.items_list = fetch_needed_items(client=client)
         self.last_updated_minute_items = datetime.now(JST)
-        with open(self.essentials_path, "r") as f:
-            self.daily_essentials: Dict[str, List[str]] = json.load(f)
+        try:
+            with open(self.essentials_path, "r") as f:
+                self.daily_essentials: Dict[str, List[str]] = json.load(f)
+        except:
+            self.daily_essentials: Dict[str, List[str]] = {}
         
     def update_item_list(self):
         now_jst = datetime.now(JST)
@@ -179,13 +182,15 @@ class AlertUi(BaseUi):
         try:
             with open(self.status_file, "r") as f:
                 data = json.load(f)
-            if type(data) != dict:
+            if isinstance(data, dict):
                 raise TypeError("Data type must be dict")
             
             for alert_type in self.AlertType:
                 val = data.get(alert_type.name, False)
-                if val == True:
+                if isinstance(val, bool) and val is True
                     active_messages.append(self.custom_alert_message[alert_type])
+                elif not isinstance(val, bool) and val is not None:
+                    print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
         except Exception as e:
             print(str(e))
         return active_messages
