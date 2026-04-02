@@ -5,3 +5,9 @@
 
 ### [Technical_Decisions]
 - **Alert Check Frequency:** `UiController.check_alerts` における毎ループの `json.load` は、Raspberry Pi 3 のリソース上、実用上のパフォーマンス低下が認められないため、実装のシンプルさとリアルタイム性を優先し、キャッシュロジック（timedelta）を導入しない。
+- **Exception Handling Strategy:** 実装の複雑化を避けるため、現在は各メソッド内での個別 `try-except` による最低限の保護に留めている。全体的なエラーハンドリング刷新は「大きな変更」と定義し、段階的に実施する。
+
+### [Pending_Tasks]
+- **Robustness:** 異常終了時のユーザーフィードバック実装（Issue化済み）。
+    - 現状、メインループ内での例外発生時にフリーズかクラッシュかの判別が困難。
+    - 対策案：`try-except` でメインループを囲い、致命的エラー発生時に `BaseUi` の仕組みを利用して画面上にエラーメッセージ（トレースバック等）を巨大フォントで描画して停止する仕組みを検討中。
