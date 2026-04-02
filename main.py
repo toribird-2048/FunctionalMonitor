@@ -191,7 +191,7 @@ class AlertUi(BaseUi):
                     active_messages.append(self.custom_alert_message[alert_type])
                 elif not isinstance(val, bool) and val is not None:
                     print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
-        except Exception as e:
+        except (json.JSONDecodeError, IOError, TypeError) as e:
             print(f"Error reading {self.status_file}: {e}")
         return active_messages
 
@@ -222,16 +222,18 @@ class UiController:
         try:
             with open(AlertUi.status_file, "r") as f:
                 data = json.load(f)
-                if not isinstance(data, dict):
-                    raise TypeError("Data type must be dict")
+            if not isinstance(data, dict):
+                raise TypeError("Data type must be dict")
             
             for alert_type in AlertUi.AlertType:
                 val = data.get(alert_type.name, False)
-                if val == True:
+                if isinstance(val, bool) and val is True:
                     self.current_ui_index = 2
                     return
-        except:
-            pass
+                elif not isinstance(val, bool) and val is not None:
+                    print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
+        except (json.JSONDecodeError, IOError, TypeError) as e:
+            print(f"Error reading {AlertUi.status_file}: {e}")
         if self.current_ui_index == 2:
             self.current_ui_index = 0
         return
