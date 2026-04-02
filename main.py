@@ -197,7 +197,7 @@ class AlertUi(BaseUi):
 
     def draw(self):
         messages = self.get_active_alerts()
-        if not messages:
+        if len(messages) <= 1:
             return
         
         self.draw_center("\n".join(messages), font_size=200, color=(255,0,0))

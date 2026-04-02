@@ -8,7 +8,6 @@
 ### [Technical_Decisions]
 - **Alert Check Frequency:** `UiController.check_alerts` における毎ループの `json.load` は、Raspberry Pi 3 のリソース上、実用上のパフォーマンス低下が認められないため、実装のシンプルさとリアルタイム性を優先し、キャッシュロジック（timedelta）を導入しない。
 - **Exception Handling Strategy:** 実装の複雑化を避けるため、現在は各メソッド内での個別 `try-except` による最低限の保護に留めている。全体的なエラーハンドリング刷新は「大きな変更」と定義し、段階的に実施する。
-- **Empty Alerts:** AlertUiはアラートが存在する時のみ表示されるため、コードの美しさも考慮しアラートが空であってもget_active_alertsの戻り値は[Alerts:]とします。これは好みの問題です。
 - **essential items:** essential items、つまり時間割に応じた持ち物表は、変更時学年が上がることもあり全く原型を留めないため、編集時に前のessential.jsonを残しておく必要はない。
 
 ### [Pending_Tasks]
