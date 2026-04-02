@@ -2,8 +2,8 @@ import questionary
 import json
 import sys
 
-items_path = "items.json"
-essential_items_path = "essentials.json"
+items_path = "essentials/items.json"
+essential_items_path = "essentials/daily_essentials.json"
 items = []
 
 try:
