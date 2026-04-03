@@ -7,6 +7,8 @@ from github import Github
 import time
 import random
 
+REQUIRED_ENV_VARS = ["GEMINI_API_KEY", "GITHUB_TOKEN", "GITHUB_REPOSITORY"]
+
 def validate_environment():
     """実行時に必要な環境変数が揃っているか確認する"""
     missing = [var for var in REQUIRED_ENV_VARS if not os.environ.get(var)]
@@ -19,7 +21,6 @@ validate_environment()
 base_branch = sys.argv[1]
 head_branch = sys.argv[2]
 
-REQUIRED_ENV_VARS = ["GEMINI_API_KEY", "GITHUB_TOKEN", "GITHUB_REPOSITORY"]
 
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
