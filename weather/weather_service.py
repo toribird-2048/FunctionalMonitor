@@ -79,6 +79,6 @@ class WeatherService:
                     weather_code=code,
                     weather_text=self.WEATHER_MAP.get(code, f"不明({code})")
             )
-        except:
-            print(f"Error: Data for hour {hour} not found.")
+        except (KeyError, IndexError) as e:
+            print(f"Data structure mismatch or invalid hour index: {e}")
             return None
