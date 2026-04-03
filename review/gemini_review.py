@@ -210,7 +210,8 @@ if review_results:
         )
         appendix_text = appendix_response.text
     except Exception:
-        appendix_text = "残念！付録の生成に失敗しました。"
+        pass
+    
     if appendix_text is None:
         appendix_text = "残念！付録の生成に失敗しました。"
 
