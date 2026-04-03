@@ -52,6 +52,7 @@ class WeatherService:
             "timezone": "Asia/Tokyo",
         }
         weather_json: dict = {}
+        response = None
         for attempt in range(WeatherService.MAX_RETRY):
             try:
                 response = requests.get(self.base_url, params=params, timeout=10)
