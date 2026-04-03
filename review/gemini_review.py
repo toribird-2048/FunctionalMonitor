@@ -18,6 +18,11 @@ def validate_environment():
 
 validate_environment()
 
+
+if len(sys.argv) < 3:
+    print("引数が正しくありません。例：`gemini_review.py {base_branch} {head_branch}`")
+    sys.exit(1)
+
 base_branch = sys.argv[1]
 head_branch = sys.argv[2]
 
