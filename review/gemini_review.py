@@ -18,6 +18,8 @@ IGNORE_EXTENSIONS = {
     '.ico', '.pdf', '.zip', '.gz', '.tar', '.mp4', '.mp3', '.db', '.sqlite'
 }
 
+IGNORE_FILES = {os.path.basename(__file__), "package-lock.json", "yarn.lock"}
+
 MAX_FILE_SIZE = 500 * 1024
 
 context_path = "review/REVIEW_CONTEXT.md"
@@ -27,6 +29,32 @@ def get_git_result(command):
         return subprocess.check_output(command, shell=True).decode("utf-8").strip()
     except Exception:
         return ""
+
+def read_repository_file(path: str) -> str:
+    """
+    リポジトリ内の指定されたファイルの全文を読み取ります。
+    引数: str (ファイルパス)
+    戻り値: str (ファイル内容)
+    """
+    if any(ext in path for ext in IGNORE_EXTENSIONS) or os.path.basename(path) in IGNORE_FILES:
+        return "Error: This file is restricted or binary."
+    
+    if not os.path.exists(path):
+        return f"Error: File '{path}' not found."
+    
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"Error: Could not read file: {str(e)}"
+
+tools = [read_repository_file]
+config = genai.types.GenerateContentConfig(
+    tools=tools,
+    automatic_function_calling=genai.types.AutomaticFunctionCallingConfig(maximum_remote_calls=3)
+)
+
+project_structure = get_git_result("git ls-files")
 
 files = get_git_result(f"git diff --name-only origin/{base_branch}...HEAD").split("\n")
 
@@ -109,6 +137,7 @@ for file_path in files:
         2. **場所の特定**: 行番号は使用せず、「UiControllerのcheck_alertsメソッド内」のように、構造名（クラス名やメソッド名）を用いて場所を特定してください。
         3. **文体の簡潔化**: 冗長な挨拶は不要です。事実と論理に基づき、簡潔に記述してください。
         4. **文脈の考慮**: REVIEW_CONTEXT.md に記載された既知の決定事項（例：あえてキャッシュを導入しない等）に対する重複指摘は避けてください。
+        5. **関連ファイルの取得**: レビュー対象のファイルが依存、または関係している他のファイルの内容を確認する必要がある場合は、`read_repository_file`関数を使用して中身を確認した上で判断してください。
     """
 
     for attempt in range(MAX_RETRIES):
@@ -116,7 +145,8 @@ for file_path in files:
         try:
             response = client.models.generate_content(
                 model="gemini-3.1-flash-lite-preview",
-                contents=prompt
+                contents=prompt,
+                config=config
             )
             elapsed = time.time() - start_time
             print(f"Done! ({elapsed:.1f}s)")
