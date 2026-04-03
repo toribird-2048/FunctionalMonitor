@@ -26,6 +26,20 @@ context_path = "review/REVIEW_CONTEXT.md"
 
 REPO_ROOT = os.path.abspath(os.getcwd())
 
+def get_filtered_project_structure():
+    raw_files = get_git_result("git ls-files").split("\n")
+    filtered = []
+
+    for f in raw_files:
+        if not f: continue
+        _, ext = os.path.splitext(f)
+        if ext.lower() in IGNORE_EXTENSIONS: continue
+        if os.path.basename(f) in IGNORE_FILES: continue
+        if any(secret in f for secret in [".env", ".git/", "node_modules/", "secrets/"]):
+            continue
+        filtered.append(f)
+    return "\n".join(filtered)
+
 def get_git_result(command):
     try:
         return subprocess.check_output(command, shell=True).decode("utf-8").strip()
@@ -38,22 +52,25 @@ def read_repository_file(path: str) -> str:
     引数: str (ファイルパス)
     戻り値: str (ファイル内容)
     """
-    abs_path = os.path.abspath(path)
+    abs_path = os.path.realpath(path)
 
-    if not abs_path.startswith(REPO_ROOT):
-        return "Error Access denied. You can only read files with in the repository."
+    root_real_path = os.path.realpath(REPO_ROOT)
 
-    if any(ext in path for ext in IGNORE_EXTENSIONS) or os.path.basename(path) in IGNORE_FILES:
-        return "Error: This file is restricted or binary."
+    if not abs_path.startswith(root_real_path):
+        return "[TOOL ERROR!!!]Access denied. You can only read files with in the repository."
+
+    _, ext = os.path.splitext(path)
+    if ext.lower() in IGNORE_EXTENSIONS or os.path.basename(path) in IGNORE_FILES:
+        return "[TOOL ERROR!!!] This file is restricted or binary."
     
     if not os.path.exists(path):
-        return f"Error: File '{path}' not found."
+        return f"[TOOL ERROR!!!] File '{path}' not found."
     
     try:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     except Exception as e:
-        return f"Error: Could not read file: {str(e)}"
+        return f"[TOOL ERROR!!!] Could not read file: {str(e)}"
 
 tools = [read_repository_file]
 config = genai.types.GenerateContentConfig(
@@ -61,7 +78,7 @@ config = genai.types.GenerateContentConfig(
     automatic_function_calling=genai.types.AutomaticFunctionCallingConfig(maximum_remote_calls=3)
 )
 
-project_structure = get_git_result("git ls-files")
+project_structure = get_filtered_project_structure()
 
 files = get_git_result(f"git diff --name-only origin/{base_branch}...HEAD").split("\n")
 
