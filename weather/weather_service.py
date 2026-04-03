@@ -82,6 +82,3 @@ class WeatherService:
         except:
             print(f"Error: Data for hour {hour} not found.")
             return None
-        
-ws = WeatherService()
-print(ws.fetch_weather(WeatherService.Locations.SCHOOL))
