@@ -69,7 +69,7 @@ class WeatherService:
         try:
             weather_json = weather_data.json()
         except json.JSONDecodeError as e:
-            print({str(e)})
+            print(f"JSON Decode Error: {e}")
             return None
         try:
             code = weather_json["hourly"]["weather_code"][hour]
