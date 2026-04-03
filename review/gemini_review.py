@@ -77,6 +77,26 @@ def read_repository_file(path: str) -> str:
     except Exception as e:
         return f"[TOOL ERROR!!!] Could not read file: {str(e)}"
 
+def call_gemini(prompt:str, config:genai.types.GenerateContentConfigOrDict|None=None, model:str=review_model) -> str|None:
+    for attempt in range(MAX_RETRIES):
+        start_time = time.time()
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=config
+            )
+            elapsed = time.time() - start_time
+            print(f"Done! ({elapsed:.1f}s)")
+            return response.text
+        except Exception as e:
+            if "503" in str(e) and attempt < MAX_RETRIES - 1:
+                print(f"Server busy, retrying in 5s ... (Attempt{attempt+1})")
+                print(f"Error details: {e}")
+                time.sleep(5)
+                continue
+            raise e
+
 tools = [read_repository_file]
 config = genai.types.GenerateContentConfig(
     tools=tools,
@@ -173,28 +193,12 @@ for file_path in files:
         5. **関連ファイルの取得**: レビュー対象のファイルが依存、または関係している他のファイルの内容を確認する必要がある場合は、`read_repository_file`関数を使用して中身を確認した上で判断してください。
     """
 
-    for attempt in range(MAX_RETRIES):
-        start_time = time.time()
-        try:
-            response = client.models.generate_content(
-                model=review_model,
-                contents=prompt,
-                config=config
-            )
-            elapsed = time.time() - start_time
-            print(f"Done! ({elapsed:.1f}s)")
-            break
-        except Exception as e:
-            if "503" in str(e) and attempt < MAX_RETRIES - 1:
-                print(f"Server busy, retrying in 5s ... (Attempt{attempt+1})")
-                print(f"Error details: {e}")
-                continue
-            raise e
+    response = call_gemini(prompt, config=config)
 
     time.sleep(1)
 
-    if response.text and "Pass" not in response.text:
-        review_results.append(f"### Review for `{file_path}`\n{response.text}")
+    if response and "Pass" not in response:
+        review_results.append(f"### Review for `{file_path}`\n{response}")
 
 if review_results:
     appendix_prompt = f"""
@@ -203,15 +207,8 @@ if review_results:
     テーマはランダムに選ばれます。今回のテーマは{random.choice(random_appendix_theme)}です。
     数行程度のテーマに従ったコンテンツを書いてください。
     """
-    try:
-        appendix_response = client.models.generate_content(
-            model=review_model,
-            contents=appendix_prompt
-        )
-        appendix_text = appendix_response.text
-    except Exception:
-        pass
-    
+    appendix_text = call_gemini(appendix_prompt)
+
     if appendix_text is None:
         appendix_text = "残念！付録の生成に失敗しました。"
 
