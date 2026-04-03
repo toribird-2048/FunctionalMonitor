@@ -222,12 +222,17 @@ for file_path in files:
         review_results.append(f"### Review for `{file_path}`\n{response}")
 
 if review_results:
+    full_review_summary = "\n\n".join(review_results)
     appendix_prompt = f"""
     あなたは技術に精通しつつ、ユーモアのあるシニアエンジニアです。
     すでにAIによるコードレビューは終わっており、このコーナーはAIコードレビューの最後に付け足される付録コーナーです。
     テーマはランダムに選ばれます。今回のテーマは{random.choice(random_appendix_theme)}です。
     数行程度のテーマに従ったコンテンツを書いてください。
+
+    以下は小話の参考にできる今回なされたレビューの一覧です。
+    {full_review_summary}
     """
+
     appendix_text = call_gemini(appendix_prompt)
 
     if appendix_text is None:
