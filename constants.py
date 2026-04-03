@@ -1,0 +1,6 @@
+from enum import Enum
+
+class AlertType(Enum):
+    TAK_LOW_BATTERY = "TAK_LOW_BATTERY"
+    AQUOS_LOW_BATTERY = "AQUOS_LOW_BATTERY"
+    UMBRELLA_REQUIRED = "UMBRELLA_REQUIRED"

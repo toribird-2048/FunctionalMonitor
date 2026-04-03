@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from enum import Enum, auto
 from get_items_data import fetch_needed_items, fetch_homework
 import json
+from constants import AlertType
 
 load_dotenv()
 
@@ -163,18 +164,14 @@ class ItemListUi(BaseUi):
         self.draw_document(self.daily_essentials.get(next_day.strftime("%a"), []) + self.items_list)
 
 class AlertUi(BaseUi):
-    class AlertType(Enum):
-        TAK_LOW_BATTERY = "TAK_LOW_BATTERY"
-        AQUOS_LOW_BATTERY = "AQUOS_LOW_BATTERY"
-        UMBRELLA_REQUIRED = "UMBRELLA_REQUIRED"
     status_file = "alerts/alerts.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.default_close_key = pygame.K_n
         self.alert_messages = {
-            self.AlertType.TAK_LOW_BATTERY: "Charge Tak iPad!",
-            self.AlertType.AQUOS_LOW_BATTERY: "Charge your AQUOS!",
-            self.AlertType.UMBRELLA_REQUIRED: "Bring your Umbrella!"
+            AlertType.TAK_LOW_BATTERY: "Charge Tak iPad!",
+            AlertType.AQUOS_LOW_BATTERY: "Charge your AQUOS!",
+            AlertType.UMBRELLA_REQUIRED: "Bring your Umbrella!"
             }
 
     def get_active_alerts(self):
@@ -187,7 +184,7 @@ class AlertUi(BaseUi):
             if not isinstance(data, dict):
                 raise TypeError("Data type must be dict")
             
-            for alert_type in self.AlertType:
+            for alert_type in AlertType:
                 val = data.get(alert_type.name, False)
                 if isinstance(val, bool) and val is True:
                     active_messages.append(self.alert_messages[alert_type])
@@ -227,7 +224,7 @@ class UiController:
             if not isinstance(data, dict):
                 raise TypeError("Data type must be dict")
             
-            for alert_type in AlertUi.AlertType:
+            for alert_type in AlertType:
                 val = data.get(alert_type.name, False)
                 if isinstance(val, bool) and val is True:
                     self.current_ui_index = 2

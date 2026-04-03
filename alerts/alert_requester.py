@@ -1,4 +1,4 @@
-from main import AlertUi
+from constants import AlertType
 from weather.weather_service import WeatherService
 import time
 import requests
@@ -6,7 +6,7 @@ import requests
 weather_service = WeatherService()
 alert_manager_url = "http://localhost:8000/alert"
 
-def send_request(alert_type: AlertUi.AlertType, is_active: bool):
+def send_request(alert_type: AlertType, is_active: bool):
     data = {
         "type": alert_type.name,
         "is_active": is_active
@@ -38,7 +38,7 @@ def update_alert_umbrella():
         if "雨" in weather.weather_text or "霧" in weather.weather_text or "雪" in weather.weather_text:
             is_umbrella_required = True
             break
-    send_request(AlertUi.AlertType.UMBRELLA_REQUIRED, is_umbrella_required)
+    send_request(AlertType.UMBRELLA_REQUIRED, is_umbrella_required)
 
 alert_updaters = [update_alert_umbrella]
 

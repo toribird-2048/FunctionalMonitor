@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from main import AlertUi
+from constants import AlertType
 import json
 import os
 import uvicorn
@@ -13,7 +13,7 @@ STATUS_FILE = "alerts/alerts.json"
 file_lock = asyncio.Lock()
 
 class AlertUpdate(BaseModel):
-    type: AlertUi.AlertType
+    type: AlertType
     is_active: bool
 
 @app.post("/alert")
