@@ -45,7 +45,7 @@ context_path = "review/REVIEW_CONTEXT.md"
 
 review_model = "gemini-3.1-flash-lite-preview"
 
-random_appendix_theme = ("猫の豆知識", "数学の面白い概念", "物理の面白い話", "コンピュータの歴史", "任意のプログラミング言語の豆知識", "IT系の小話", "言語学の雑学", "なぞなぞまたはクイズ")
+appendix_themes = ("猫の豆知識", "数学の面白い概念", "物理の面白い話", "コンピュータの歴史", "任意のプログラミング言語の豆知識", "IT系の小話", "言語学の雑学", "なぞなぞまたはクイズ")
 
 REPO_ROOT = os.path.abspath(os.getcwd())
 
@@ -229,10 +229,11 @@ for file_path in files:
 
 if review_results:
     full_review_summary = "\n\n".join(review_results)
+    theme = random.choice(appendix_themes)
     appendix_prompt = f"""
     あなたは技術に精通しつつ、ユーモアのあるシニアエンジニアです。
     すでにAIによるコードレビューは終わっており、このコーナーはAIコードレビューの最後に付け足される付録コーナーです。
-    テーマはランダムに選ばれます。今回のテーマは{random.choice(random_appendix_theme)}です。
+    テーマはランダムに選ばれます。今回のテーマは{theme}です。
     数行程度のテーマに従ったコンテンツを書いてください。
 
     以下は小話の参考にできる今回なされたレビューの一覧です。
@@ -247,6 +248,7 @@ if review_results:
     final_comment = (
         "## Gemini Code Review Result\n\n" + 
         "\n\n---\n\n".join(review_results) +
+        "\n\n" + f"## 付録(テーマ:{theme})" +
         "\n\n" + appendix_text
     )
 
