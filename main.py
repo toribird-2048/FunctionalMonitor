@@ -171,9 +171,10 @@ class AlertUi(BaseUi):
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
         self.default_close_key = pygame.K_n
-        self.custom_alert_message = {
+        self.alert_messages = {
             self.AlertType.TAK_LOW_BATTERY: "Charge Tak iPad!",
-            self.AlertType.AQUOS_LOW_BATTERY: "Charge my AQUOS!"
+            self.AlertType.AQUOS_LOW_BATTERY: "Charge your AQUOS!",
+            self.AlertType.UMBRELLA_REQUIRED: "Bring your Umbrella!"
             }
 
     def get_active_alerts(self):
@@ -189,7 +190,7 @@ class AlertUi(BaseUi):
             for alert_type in self.AlertType:
                 val = data.get(alert_type.name, False)
                 if isinstance(val, bool) and val is True:
-                    active_messages.append(self.custom_alert_message[alert_type])
+                    active_messages.append(self.alert_messages[alert_type])
                 elif not isinstance(val, bool) and val is not None:
                     print(f"Warning: Expected bool for {alert_type.name}, but got {type(val)}")
         except (json.JSONDecodeError, IOError, TypeError) as e:
