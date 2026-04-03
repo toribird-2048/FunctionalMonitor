@@ -166,6 +166,7 @@ class AlertUi(BaseUi):
     class AlertType(Enum):
         TAK_LOW_BATTERY = "TAK_LOW_BATTERY"
         AQUOS_LOW_BATTERY = "AQUOS_LOW_BATTERY"
+        UMBRELLA_REQUIRED = "UMBRELLA_REQUIRED"
     status_file = "alerts/alerts.json"
     def __init__(self, screen:pygame.Surface):
         super().__init__(screen)
