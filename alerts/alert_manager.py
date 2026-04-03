@@ -19,6 +19,7 @@ class AlertUpdate(BaseModel):
 @app.post("/alert")
 async def update_alert(data: AlertUpdate):
     async with file_lock:
+        os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
         current_alerts = {}
         if os.path.exists(STATUS_FILE):
             try:

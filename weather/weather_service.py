@@ -53,6 +53,7 @@ class WeatherService:
         }
         weather_json: dict = {}
         response = None
+        weather_data = None
         for attempt in range(WeatherService.MAX_RETRY):
             try:
                 response = requests.get(self.base_url, params=params, timeout=10)
@@ -63,6 +64,8 @@ class WeatherService:
                 print(f"Failed to get weather data. Retrying... ({attempt})")
                 if attempt == WeatherService.MAX_RETRY - 1:
                     return None
+        if weather_data is None:
+            return None
         try:
             weather_json = weather_data.json()
         except json.JSONDecodeError as e:

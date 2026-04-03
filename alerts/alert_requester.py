@@ -12,7 +12,7 @@ def send_request(alert_type: AlertType, is_active: bool):
         "is_active": is_active
     }
     try:
-        response = requests.post(alert_manager_url, json=data)
+        response = requests.post(alert_manager_url, json=data, timeout=5)
         response.raise_for_status()
         print("Success:", response.json())
 
