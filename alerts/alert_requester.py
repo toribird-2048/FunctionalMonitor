@@ -2,9 +2,13 @@ from constants import AlertType
 from weather.weather_service import WeatherService
 import time
 import requests
+from datetime import datetime, timezone, timedelta
 
 weather_service = WeatherService()
 alert_manager_url = "http://localhost:8000/alert"
+JST = timezone(timedelta(hours=+9))
+
+ACTIVE_HOUR_RANGE= range(6,9)
 
 def send_request(alert_type: AlertType, is_active: bool):
     data = {
@@ -24,6 +28,10 @@ def update_alert_umbrella():
     """
     現在天気取得による傘警告に使用
     """
+    if datetime.now(JST).hour not in ACTIVE_HOUR_RANGE:
+        print(f"現在時刻 {datetime.now(JST).hour}時はアクティブ時間外です。自動的に傘アラートは解除されます。")
+        send_request(AlertType.UMBRELLA_REQUIRED, False)
+        return
     home_weather_7 = weather_service.fetch_weather(WeatherService.Locations.HOME)
     home_weather_8 = weather_service.fetch_weather(WeatherService.Locations.HOME, hour=8)    
     school_weather_7 = weather_service.fetch_weather(WeatherService.Locations.SCHOOL)
@@ -52,6 +60,6 @@ if __name__ == "__main__":
                 print(f"updater:{updater.__name__}を終了。")
             except Exception as e:
                 print(f"updater:{updater.__name__}の実行中にエラーが発生。\nエラー：{e}")
-        print("1時間待機します。")
-        time.sleep(3600)
+        print("15分後に再チェックします。")
+        time.sleep(900)
 
