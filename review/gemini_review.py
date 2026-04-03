@@ -197,7 +197,7 @@ for file_path in files:
         3. **文体の簡潔化**: 冗長な挨拶は不要です。事実と論理に基づき、簡潔に記述してください。
         4. **文脈の考慮**: REVIEW_CONTEXT.md に記載された既知の決定事項（例：あえてキャッシュを導入しない等）に対する重複指摘は避けてください。
         5. **関連ファイルの取得**: レビュー対象のファイルが依存、または関係している他のファイルの内容を確認する必要がある場合は、`read_repository_file`関数を使用して中身を確認した上で判断してください。
-        6. **コミットメッセージの質**: `fix: solve path traversal in read_repository_file` のように、プレフィックス（fix, refactor, featなど）を適切に使い、簡潔に記述してください。
+        6. **コミットメッセージの質**: `fix: solve path traversal in read_repository_file` のように、プレフィックス（fix, refactor, featなど）を適切に使い、簡潔に記述してください。プレフィックス以外は日本語とします。
     """
 
     response = call_gemini(prompt, config=config)
