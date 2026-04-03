@@ -5,6 +5,7 @@ import json
 from google import genai
 from github import Github
 import time
+import random
 
 base_branch = sys.argv[1]
 head_branch = sys.argv[2]
@@ -23,6 +24,10 @@ IGNORE_FILES = {os.path.basename(__file__), "package-lock.json", "yarn.lock"}
 MAX_FILE_SIZE = 500 * 1024
 
 context_path = "review/REVIEW_CONTEXT.md"
+
+review_model = "gemini-3.1-flash-lite-preview"
+
+random_appendix_theme = ("猫の豆知識", "数学の面白い概念", "物理の面白い話", "コンピュータの歴史", "任意のプログラミング言語の豆知識", "IT系の小話", "言語学の雑学", "なぞなぞまたはクイズ")
 
 REPO_ROOT = os.path.abspath(os.getcwd())
 
@@ -172,7 +177,7 @@ for file_path in files:
         start_time = time.time()
         try:
             response = client.models.generate_content(
-                model="gemini-3.1-flash-lite-preview",
+                model=review_model,
                 contents=prompt,
                 config=config
             )
@@ -192,7 +197,28 @@ for file_path in files:
         review_results.append(f"### Review for `{file_path}`\n{response.text}")
 
 if review_results:
-    final_comment = "## Gemini Code Review Result\n\n" + "\n\n---\n\n".join(review_results)
+    appendix_prompt = f"""
+    あなたは技術に精通しつつ、ユーモアのあるシニアエンジニアです。
+    すでにコードレビューは終わっており、このコーナーは付録コーナーです。
+    テーマはランダムに選ばれます。今回のテーマは{random.choice(random_appendix_theme)}です。
+    数行程度のテーマに従ったコンテンツを書いてください。
+    """
+    try:
+        appendix_response = client.models.generate_content(
+            model=review_model,
+            contents=appendix_prompt
+        )
+        appendix_text = appendix_response.text
+    except Exception:
+        appendix_text = "残念！付録の生成に失敗しました。"
+    if appendix_text is None:
+        appendix_text = "残念！付録の生成に失敗しました。"
+
+    final_comment = (
+        "## Gemini Code Review Result\n\n" + 
+        "\n\n---\n\n".join(review_results) +
+        "\n\n" + appendix_text
+    )
 
     g = Github(os.environ["GITHUB_TOKEN"])
     repo = g.get_repo(os.environ["GITHUB_REPOSITORY"])
