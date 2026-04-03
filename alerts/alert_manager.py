@@ -27,13 +27,19 @@ async def update_alert(data: AlertUpdate):
             except:
                 pass
         current_alerts[data.type.name] = data.is_active
-        
+        temp_path=None
         try:
-            with tempfile.NamedTemporaryFile("w", dir=os.path.dirname(STATUS_FILE)) as tf:
-                json.dump(current_alerts, tf, indent=4)
-                temp_name = tf.name
-            os.replace(temp_name, STATUS_FILE)
+            fd, temp_path = tempfile.mkstemp(
+                dir=os.path.dirname(STATUS_FILE),
+                text=True
+            )
+
+            with os.fdopen(fd, "w") as f:
+                json.dump(current_alerts, f, indent=4)
+            os.replace(temp_path, STATUS_FILE)
         except Exception as e:
+            if temp_path and os.path.exists(temp_path):
+                os.remove(temp_path)
             return {"status": "error", "message": str(e)}
 
         return {"status": "ok", "updated": data.type.name, "alert_active": data.is_active}
