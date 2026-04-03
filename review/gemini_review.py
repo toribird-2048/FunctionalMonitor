@@ -7,8 +7,20 @@ from github import Github
 import time
 import random
 
+def validate_environment():
+    """実行時に必要な環境変数が揃っているか確認する"""
+    missing = [var for var in REQUIRED_ENV_VARS if not os.environ.get(var)]
+    if missing:
+        print(f"Error: 以下の環境変数が設定されていません: {','.join(missing)}", file=sys.stderr)
+        sys.exit(1)
+
+validate_environment()
+
 base_branch = sys.argv[1]
 head_branch = sys.argv[2]
+
+REQUIRED_ENV_VARS = ["GEMINI_API_KEY", "GITHUB_TOKEN", "GITHUB_REPOSITORY"]
+
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
@@ -30,6 +42,8 @@ review_model = "gemini-3.1-flash-lite-preview"
 random_appendix_theme = ("猫の豆知識", "数学の面白い概念", "物理の面白い話", "コンピュータの歴史", "任意のプログラミング言語の豆知識", "IT系の小話", "言語学の雑学", "なぞなぞまたはクイズ")
 
 REPO_ROOT = os.path.abspath(os.getcwd())
+
+
 
 def get_filtered_project_structure():
     raw_files = get_git_result(["git", "ls-files", "--cached", "--exclude-standard"]).split("\n")
