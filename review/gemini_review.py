@@ -172,6 +172,8 @@ for file_path in files:
         - **review-type**: <バグ報告 | セキュリティ懸念>
         - **review-content**: <具体的になぜ問題なのか、どのクラス/メソッドで発生しているか>
         - **advice**: <具体的な修正コード案や対策>
+        - **commit-message**: <この修正のみを適用する場合のGitコミットメッセージの提案(Conventional Commits形式)>
+
 
         ---
 
@@ -182,6 +184,7 @@ for file_path in files:
         - **review-type**: <パフォーマンス改善 | 改善案 | 保守性向上>
         - **review-content**: <現状の問題点と、変更によるメリット>
         - **advice**: <具体的な実装案や代替手法>
+        - **commit-message**: <この改善のみを適用する場合のGitコミットメッセージの提案(Conventional Commits形式)>
 
         ---
 
@@ -191,6 +194,7 @@ for file_path in files:
         3. **文体の簡潔化**: 冗長な挨拶は不要です。事実と論理に基づき、簡潔に記述してください。
         4. **文脈の考慮**: REVIEW_CONTEXT.md に記載された既知の決定事項（例：あえてキャッシュを導入しない等）に対する重複指摘は避けてください。
         5. **関連ファイルの取得**: レビュー対象のファイルが依存、または関係している他のファイルの内容を確認する必要がある場合は、`read_repository_file`関数を使用して中身を確認した上で判断してください。
+        6. **コミットメッセージの質**: `fix: solve path traversal in read_repository_file` のように、プレフィックス（fix, refactor, featなど）を適切に使い、簡潔に記述してください。
     """
 
     response = call_gemini(prompt, config=config)
