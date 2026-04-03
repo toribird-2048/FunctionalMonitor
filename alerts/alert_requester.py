@@ -28,9 +28,8 @@ def update_alert_umbrella():
     """
     現在天気取得による傘警告に使用
     """
-    now = datetime.now(JST)
-    if now.hour not in ACTIVE_HOUR_RANGE:
-        print(f"現在時刻 {now.hour}時はアクティブ時間外です。自動的に傘アラートは解除されます。")
+    if datetime.now(JST).hour not in ACTIVE_HOUR_RANGE:
+        print(f"現在時刻 {datetime.now(JST).hour}時はアクティブ時間外です。自動的に傘アラートは解除されます。")
         send_request(AlertType.UMBRELLA_REQUIRED, False)
         return
     home_weather_7 = weather_service.fetch_weather(WeatherService.Locations.HOME)
@@ -53,7 +52,6 @@ alert_updaters = [update_alert_umbrella]
 
 if __name__ == "__main__":
     while True:
-        now = datetime.now(JST)
         print("定期アラートチェック開始...")
         for updater in alert_updaters:
             try:
