@@ -49,8 +49,9 @@ if __name__ == "__main__":
             try:
                 print(f"updater:{updater.__name__}を開始...")
                 updater()
-                print(f"updater:{updater.__name__}を終了。1時間待機します。")
+                print(f"updater:{updater.__name__}を終了。")
             except Exception as e:
                 print(f"updater:{updater.__name__}の実行中にエラーが発生。\nエラー：{e}")
+        print("1時間待機します。")
         time.sleep(3600)
 
