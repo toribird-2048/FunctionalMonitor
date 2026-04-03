@@ -15,7 +15,7 @@ MAX_RETRIES = 3
 
 IGNORE_EXTENSIONS = {
     '.ttf', '.woff', '.woff2', '.png', '.jpg', '.jpeg', '.gif', '.svg', 
-    '.ico', '.pdf', '.zip', '.gz', '.tar', '.mp4', '.mp3', '.db', '.sqlite'
+    '.ico', '.pdf', '.zip', '.gz', '.tar', '.mp4', '.mp3', '.db', '.sqlite', '.env', ".git"
 }
 
 IGNORE_FILES = {os.path.basename(__file__), "package-lock.json", "yarn.lock"}
@@ -23,6 +23,8 @@ IGNORE_FILES = {os.path.basename(__file__), "package-lock.json", "yarn.lock"}
 MAX_FILE_SIZE = 500 * 1024
 
 context_path = "review/REVIEW_CONTEXT.md"
+
+REPO_ROOT = os.path.abspath(os.getcwd())
 
 def get_git_result(command):
     try:
@@ -36,6 +38,11 @@ def read_repository_file(path: str) -> str:
     引数: str (ファイルパス)
     戻り値: str (ファイル内容)
     """
+    abs_path = os.path.abspath(path)
+
+    if not abs_path.startswith(REPO_ROOT):
+        return "Error Access denied. You can only read files with in the repository."
+
     if any(ext in path for ext in IGNORE_EXTENSIONS) or os.path.basename(path) in IGNORE_FILES:
         return "Error: This file is restricted or binary."
     
@@ -96,11 +103,15 @@ for file_path in files:
         あなたは技術的合理性を最優先するシニアエンジニアです。
         プロジェクトの前提条件（REVIEW_CONTEXT.md）を熟知した上で、提供された差分（diff）を厳格にレビューしてください。
 
-        ## レビュー対象
-        - ファイル名: {file_path}
-        - プロジェクト背景: {context_content}
+        ## プロジェクト背景
+        {context_content}
+        
+        ## リポジトリ内の全ファイル構造
+        {project_structure}
 
-        ## 入力データ
+        ## レビュー対象
+        - ファイル名:
+        {file_path}
         - ファイル全文: 
         {full_content}
         - 差分 (diff): 
