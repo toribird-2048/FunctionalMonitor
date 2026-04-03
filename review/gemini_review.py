@@ -75,7 +75,7 @@ def read_repository_file(path: str) -> str:
         return f"[TOOL ERROR!!!] File '{path}' not found."
     
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(abs_path, "r", encoding="utf-8") as f:
             return f.read()
     except Exception as e:
         return f"[TOOL ERROR!!!] Could not read file: {str(e)}"
