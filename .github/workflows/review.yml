@@ -34,4 +34,4 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python review/gemini_review.py ${{ github.base_ref }} ${{ github.event.pull_request.head.ref }}
+        run: python review/code_reviewer.py ${{ github.base_ref }} ${{ github.event.pull_request.head.ref }}
