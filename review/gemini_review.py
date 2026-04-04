@@ -43,7 +43,7 @@ MAX_FILE_SIZE = 500 * 1024
 
 context_path = "review/REVIEW_CONTEXT.md"
 
-review_model = "gemini-3.1-flash-lite-preview"
+review_model = "gemma-4-31b-it"
 
 appendix_themes = ("猫の豆知識", "数学の面白い概念", "物理の面白い話", "コンピュータの歴史", "任意のプログラミング言語の豆知識", "IT系の小話", "言語学の雑学", "なぞなぞまたはクイズ")
 
