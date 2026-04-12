@@ -43,31 +43,17 @@ subjects_set = set(subjects_items_kv.keys())
 timetable_set = {k: set(v) for k,v in timetable.items()}
 
 for day in days:
-    if timetable_set.get(day, set()) == set([]):
-        options = ["new_subject"]
-    else:
-        options = [
-            *map(lambda x : Choice(x, checked=True), timetable_set.get(day, set())),
-            Choice("new_subject", checked=False)
-        ]
+    current_selected = timetable_set.get(day, set())
     res = questionary.checkbox(
         f"Select essentials ({day})",
-        choices=options
+        choices=[
+            Choice(subject, checked=(subject in current_selected)) for subject in sorted(subjects_set)
+        ]
     ).ask()
     if res is None:
         print("\nInterrupted by user.")
         sys.exit(0)
     res_set = set(res)
-    if "new_subject" in res_set:
-        new_subjects = questionary.checkbox(
-            f"Select new item ({day})",
-            choices=subjects_set.difference(timetable_set.get(day, set()))
-        ).ask()
-        if new_subjects == None:
-            print("\nInterrupted by user.")
-            sys.exit(0)
-        new_subjects_set = set(new_subjects)
-        res_set = res_set.union(new_subjects_set)
     res_set.discard("new_subject")
     selected_subjects[day] = list(res_set)
     print(selected_subjects[day])
