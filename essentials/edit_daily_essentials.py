@@ -46,7 +46,7 @@ for day in days:
     if timetable_set.get(day, set()) == set([]):
         options = ["new_subject"]
     else:
-        options = choices=[
+        options = [
             *map(lambda x : Choice(x, checked=True), timetable_set.get(day, set())),
             Choice("new_subject", checked=False)
         ]
