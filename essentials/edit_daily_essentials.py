@@ -27,7 +27,7 @@ try:
         if isinstance(timetable_content, dict):
             timetable = timetable_content
         else:
-            print("Error: daily_essentials.json must be a dict.")
+            print("Error: timetable.json must be a dict.")
             sys.exit(1)
 except Exception as e:
     print(f"Failed to read {essential_items_path}")
@@ -43,27 +43,33 @@ subjects_set = set(subjects_items_kv.keys())
 timetable_set = {k: set(v) for k,v in timetable.items()}
 
 for day in days:
-    if timetable_set[day] == set([]):
+    if timetable_set.get(day, set()) == set([]):
         options = ["new_subject"]
     else:
         options = choices=[
-            *map(lambda x : Choice(x, checked=True), timetable_set[day]),
+            *map(lambda x : Choice(x, checked=True), timetable_set.get(day, set())),
             Choice("new_subject", checked=False)
         ]
-    res = set(questionary.checkbox(
+    res = questionary.checkbox(
         f"Select essentials ({day})",
         choices=options
-    ).ask())
+    ).ask()
     if res is None:
         print("\nInterrupted by user.")
         sys.exit(0)
-    if "new_subject" in res:
-        res = res.union(set(questionary.checkbox(
+    res_set = set(res)
+    if "new_subject" in res_set:
+        new_subjects = questionary.checkbox(
             f"Select new item ({day})",
-            choices=subjects_set.difference(timetable_set[day])
-        ).ask()))
-    res.discard("new_subject")
-    selected_subjects[day] = list(res)
+            choices=subjects_set.difference(timetable_set.get(day, set()))
+        ).ask()
+        if new_subjects == None:
+            print("\nInterrupted by user.")
+            sys.exit(0)
+        new_subjects_set = set(new_subjects)
+        res_set = res_set.union(new_subjects_set)
+    res_set.discard("new_subject")
+    selected_subjects[day] = list(res_set)
     print(selected_subjects[day])
     daily_essentials[day] = list(set([]).union(*[set(subjects_items_kv[subject]) for subject in selected_subjects[day]]))
 
