@@ -71,7 +71,7 @@ for day in days:
     res_set.discard("new_subject")
     selected_subjects[day] = list(res_set)
     print(selected_subjects[day])
-    daily_essentials[day] = list(set([]).union(*[set(subjects_items_kv[subject]) for subject in selected_subjects[day]]))
+    daily_essentials[day] = list(set().union(*[set(subjects_items_kv[subject]) for subject in selected_subjects[day]]))
 
 if questionary.confirm("Save this configuration?").ask():
     try:
