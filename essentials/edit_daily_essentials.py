@@ -54,7 +54,6 @@ for day in days:
         print("\nInterrupted by user.")
         sys.exit(0)
     res_set = set(res)
-    res_set.discard("new_subject")
     selected_subjects[day] = list(res_set)
     print(selected_subjects[day])
     daily_essentials[day] = list(set().union(*[set(subjects_items_kv.get(subject, [])) for subject in selected_subjects[day]]))
