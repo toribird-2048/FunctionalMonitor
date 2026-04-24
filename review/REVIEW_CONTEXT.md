@@ -5,6 +5,7 @@
 - essentials.jsonは基本的に一年に一回しか編集されません。
 - essentials.json付近の構造は複雑化させる予定は全くありません。
 - subprocess をリスト形式で使用している箇所（shell=False）において、shlex.quote の使用を推奨しないでください。それは引数の二重クォートを引き起こし、バグの原因となります。
+- 現在は2026年であり、現在の安定版は2024エディションです。
 
 ### [Technical_Decisions]
 - **Alert Check Frequency:** `UiController.check_alerts` における毎ループの `json.load` は、Raspberry Pi 3 のリソース上、実用上のパフォーマンス低下が認められないため、実装のシンプルさとリアルタイム性を優先し、キャッシュロジック（timedelta）を導入しない。
