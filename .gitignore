@@ -48,7 +48,3 @@ Thumbs.db
 
 ### infos ###
 alerts.json
-
-### cargo ###
-.cargo/
-target/
