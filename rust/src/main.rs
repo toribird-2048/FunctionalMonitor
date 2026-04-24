@@ -2,12 +2,12 @@ use macroquad::prelude::*;
 use chrono::{Local, };
 
 fn render_text(text:&str,x:f32, y:f32, font: Option<&Font>, font_size: u16, line_space: f32) {
-    let texts: Vec<&str> = text.split("\n").collect();
-    let dims: Vec<TextDimensions> = texts.iter().map(|x| measure_text(x, font, font_size, 1.0)).collect();
-    let total_height = dims.iter().map(|d| d.height).sum::<f32>() + line_space * (texts.len() as f32 - 1.0);
+    let total_height = text.lines()
+        .map(|line| measure_text(line, font, font_size, 1.0).height)
+        .sum::<f32>() + line_space * (text.lines().count() as f32 - 1.0);
     let mut current_y_top = y - total_height / 2.0;
-    for (i, line) in texts.iter().enumerate() {
-        let size = dims[i];
+    for line in text.lines() {
+        let size = measure_text(line, font, font_size, 1.0);
         draw_text_ex(
             line,
             x - size.width / 2.0,
