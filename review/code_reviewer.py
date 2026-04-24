@@ -113,7 +113,7 @@ def call_gemini(prompt:str, config:genai.types.GenerateContentConfigOrDict|None=
             print(f"Done! ({elapsed:.1f}s)")
             return response.text
         except Exception as e:
-            if "503" in str(e) and attempt < MAX_RETRIES - 1:
+            if any(code in str(e) for code in ["504", "503", "502", "500"]) and attempt < MAX_RETRIES - 1:
                 print(f"Server busy, retrying in 5s ... (Attempt{attempt+1})")
                 print(f"Error details: {e}")
                 time.sleep(5)
